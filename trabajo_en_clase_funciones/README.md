@@ -2,7 +2,7 @@
 
 **Asignatura:** Programación Web  
 **Universidad Surcolombiana — Facultad de Ingeniería**  
-**Autor:** Jhoan Sebastian (GitHub: [@crespitosoff](https://github.com/crespitosoff))
+**Autor:** Jhoan Sebastian (GitHub: [@tu-usuario](https://github.com/tu-usuario))
 
 ---
 
@@ -10,8 +10,9 @@
 
 ```
 /
-├── validacion.php   # Partes 3 y 4: formularios con sanitización, validación y calcularPromedio()
-└── README.md        # Partes 1 y 2: marco teórico y ejemplo explicado
+├── parte3.php   # Formulario Nombre/Correo/Notas con calcularPromedio()
+├── parte4.php   # Formulario completo con validación visual (verde/rojo)
+└── README.md    # Partes 1 y 2: marco teórico y ejemplo explicado
 ```
 
 ---
@@ -121,12 +122,51 @@ echo "Promedio: " . $resultado;
 
 ---
 
-## Partes 3 y 4: Implementación práctica
+## Parte 3: Formulario con `calcularPromedio()`
 
-El archivo [`validacion.php`](./validacion.php) contiene la implementación completa de ambas partes:
+Archivo: [`parte3.php`](./parte3.php)
 
-- **Parte 3:** formulario con campos Nombre, Correo y Notas; sanitización con `filter_input()`; validación de campos vacíos y formato de correo; función `calcularPromedio()` integrada.
-- **Parte 4:** formulario con Nombre, Edad, Teléfono y Correo; sanitización con `FILTER_SANITIZE_NUMBER_INT` y `FILTER_SANITIZE_EMAIL`; función personalizada `esNumeroValido()`; retroalimentación visual en verde (éxito) y rojo (errores).
+Campos: Nombre completo, Correo electrónico, Nota 1, Nota 2, Nota 3.
+
+**Sanitización aplicada:**
+- Nombre → `FILTER_DEFAULT` + `trim()`
+- Correo → `FILTER_SANITIZE_EMAIL`
+- Notas → `FILTER_SANITIZE_NUMBER_FLOAT` con `FILTER_FLAG_ALLOW_FRACTION`
+
+**Validaciones:**
+- Ningún campo vacío.
+- Correo con formato válido (`FILTER_VALIDATE_EMAIL`).
+- Las tres notas deben ser numéricas.
+
+**Salida:**
+```
+✔ Datos validados correctamente:
+Nombre:   Jhoan Sebastian
+Correo:   jhoan@ejemplo.com
+Promedio: 4.1
+```
+
+---
+
+## Parte 4: Formulario de validación completa
+
+Archivo: [`parte4.php`](./parte4.php)
+
+Campos: Nombre, Edad, Teléfono, Correo electrónico.
+
+**Sanitización aplicada:**
+- Nombre → `FILTER_DEFAULT` + `trim()`
+- Edad y Teléfono → `FILTER_SANITIZE_NUMBER_INT`
+- Correo → `FILTER_SANITIZE_EMAIL`
+
+**Validaciones:**
+- Todos los campos llenos.
+- Edad y teléfono numéricos (función personalizada `esNumeroValido()`).
+- Correo con formato válido.
+
+**Retroalimentación visual:**
+- Datos correctos → texto en **verde**.
+- Errores → texto en **rojo**, listados individualmente.
 
 ### Vista previa del comportamiento
 
@@ -138,14 +178,14 @@ El archivo [`validacion.php`](./validacion.php) contiene la implementación comp
    • Debe ingresar un número de teléfono válido.
    • El correo electrónico es obligatorio y debe tener un formato válido.
 
-[Formulario completo y válido enviado]
+[Formulario completo y válido]
 → ✔ Datos validados correctamente (verde):
-   Nombre: Diana Sofía
-   Edad: 42
+   Nombre:   Diana Sofía
+   Edad:     42
    Teléfono: 315999999
-   Correo: diana@ejemplo.com
+   Correo:   diana@ejemplo.com
 ```
 
 ---
 
-> **Nota técnica:** `FILTER_SANITIZE_STRING` está marcado como deprecado desde PHP 8.1. En entornos actualizados se recomienda usar `htmlspecialchars()` o `FILTER_SANITIZE_SPECIAL_CHARS` como alternativa.
+> **Nota técnica:** `FILTER_SANITIZE_STRING` está deprecado desde PHP 8.1. En este proyecto se usa `FILTER_DEFAULT` como reemplazo, delegando la protección contra XSS a `htmlspecialchars()` en la capa de salida.
