@@ -2,7 +2,7 @@
 
 **Asignatura:** Programación Web  
 **Universidad Surcolombiana — Facultad de Ingeniería**  
-**Autor:** Jhoan Sebastian (GitHub: [@tu-usuario](https://github.com/tu-usuario))
+**Autor:** Jhoan Sebastian (GitHub: [@crespitosoff](https://github.com/crespitosoff))
 
 ---
 
