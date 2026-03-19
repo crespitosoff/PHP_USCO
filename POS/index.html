@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiendas de Promisión Huila - POS</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Boxicons for Icons -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- jsPDF for Receipts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div class="app-container">
+        
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="logo">
+                <i class='bx bxs-store-alt'></i>
+            </div>
+            <ul class="nav-links">
+                <li class="active" data-target="view-pos" title="Punto de Venta"><a href="#"><i class='bx bx-grid-alt'></i></a></li>
+                <li data-target="view-orders" title="Órdenes Activas"><a href="#"><i class='bx bx-receipt'></i></a></li>
+                <li data-target="view-reports" title="Caja y Contabilidad"><a href="#"><i class='bx bx-bar-chart-alt-2'></i></a></li>
+                <li data-target="view-settings" title="Configuración"><a href="#"><i class='bx bx-cog'></i></a></li>
+            </ul>
+        </nav>
+
+        <!-- --- VIEW: POS (Main) --- -->
+        <main class="main-content view-section active" id="view-pos">
+            <header class="top-header">
+                <div class="header-left">
+                    <h1>Tiendas de Promisión Huila</h1>
+                    <p class="date-time" id="current-datetime">Jueves, 12 Mar 2026</p>
+                </div>
+                <div class="header-right">
+                    <div class="search-bar">
+                        <i class='bx bx-search'></i>
+                        <input type="text" id="search-input" placeholder="Buscar productos...">
+                    </div>
+                </div>
+            </header>
+
+            <!-- Categories Filter -->
+            <section class="categories">
+                <button class="category-btn active" data-filter="all">Todos</button>
+                <button class="category-btn" data-filter="bebidas_calientes">B. Calientes</button>
+                <button class="category-btn" data-filter="bebidas_frias">B. Frías</button>
+                <button class="category-btn" data-filter="para_acompanar">Acompañantes</button>
+                <button class="category-btn" data-filter="chocolate">Chocolate</button>
+                <button class="category-btn" data-filter="cafe">Café Empacado</button>
+                <button class="category-btn" data-filter="frutas_deshidratadas">Frutas Deshid.</button>
+                <button class="category-btn" data-filter="bebidas">Otras Bebidas</button>
+                <button class="category-btn" data-filter="preparacion_cafe">Preparación</button>
+                <button class="category-btn" data-filter="artesanias">Artesanías</button>
+                <button class="category-btn" data-filter="miel">Miel</button>
+                <button class="category-btn" data-filter="achiras">Achiras</button>
+                <button class="category-btn" data-filter="antipasto">Antipasto</button>
+            </section>
+
+            <!-- Product Grid -->
+            <section class="products-container" id="products-grid">
+                <!-- Products will be injected here via JS -->
+            </section>
+        </main>
+
+        <!-- --- VIEW: ORDERS (Tables/Precuentas) --- -->
+        <main class="main-content view-section" id="view-orders">
+            <header class="top-header">
+                <div class="header-left">
+                    <h1>Gestión de Órdenes</h1>
+                    <p class="date-time">Administra mesas o pedidos en curso</p>
+                </div>
+                <button class="action-btn new-order-btn" id="btn-new-order"><i class='bx bx-plus'></i> Nueva Orden</button>
+            </header>
+            
+            <section class="orders-grid" id="orders-grid">
+                <!-- Orders injected here -->
+            </section>
+        </main>
+
+        <!-- --- VIEW: REPORTS (Caja) --- -->
+        <main class="main-content view-section" id="view-reports">
+            <header class="top-header">
+                <div class="header-left">
+                    <h1>Caja y Contabilidad</h1>
+                    <p class="date-time">Apertura, cierre y reporte de ventas del día</p>
+                </div>
+                <div>
+                    <button class="action-btn register-btn open-btn" id="btn-open-register">Abrir Caja</button>
+                    <button class="action-btn register-btn close-btn" id="btn-close-register">Cerrar Caja</button>
+                </div>
+            </header>
+            
+            <div class="reports-dashboard">
+                <div class="report-card">
+                    <h3>Base de Caja</h3>
+                    <p class="amount" id="report-base">$0</p>
+                </div>
+                <div class="report-card">
+                    <h3>Ventas Efectivo</h3>
+                    <p class="amount text-success" id="report-cash">$0</p>
+                </div>
+                <div class="report-card">
+                    <h3>Ventas Tarjeta</h3>
+                    <p class="amount text-success" id="report-card">$0</p>
+                </div>
+                <div class="report-card">
+                    <h3>Ventas Transferencia</h3>
+                    <p class="amount text-success" id="report-transfer">$0</p>
+                </div>
+                <div class="report-card total-card">
+                    <h3>Total Caja (Base + Efectivo)</h3>
+                    <p class="amount" id="report-total-cash">$0</p>
+                </div>
+                <div class="report-card total-card dark">
+                    <h3>Total Ventas (Sin base)</h3>
+                    <p class="amount" id="report-total-sales">$0</p>
+                </div>
+            </div>
+
+            <div class="sales-history">
+                <h2>Historial de Transacciones (Hoy)</h2>
+                <table class="sales-table">
+                    <thead>
+                        <tr>
+                            <th>Orden #</th>
+                            <th>Hora</th>
+                            <th>Método de Pago</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sales-history-body">
+                        <!-- Sales rows injected here -->
+                    </tbody>
+                </table>
+            </div>
+        </main>
+
+        <!-- --- CART SIDEBAR (Persists across views) --- -->
+        <aside class="cart-sidebar">
+            <div class="cart-header">
+                <h2>Orden <span id="active-order-label">Actual</span></h2>
+                <div class="order-id" id="active-order-id">#ORD-0001</div>
+            </div>
+
+            <div class="cart-items" id="cart-items-container">
+                <!-- Cart items will be injected here via JS -->
+            </div>
+
+            <div class="cart-summary">
+                <div class="summary-line">
+                    <span>Subtotal</span>
+                    <span id="subtotal-amount">$0</span>
+                </div>
+                <div class="summary-line">
+                    <span>Impuestos (Incluidos 0%)</span>
+                    <span id="tax-amount">$0</span>
+                </div>
+                <div class="summary-line total-line">
+                    <span>Total</span>
+                    <span id="total-amount">$0</span>
+                </div>
+
+                <div class="payment-methods">
+                    <button class="payment-btn" data-method="tarjeta"><i class='bx bx-credit-card'></i> Tarjeta</button>
+                    <button class="payment-btn active" data-method="efectivo"><i class='bx bx-money'></i> Efectivo</button>
+                    <button class="payment-btn" data-method="transferencia"><i class='bx bx-mobile-alt'></i> Transf.</button>
+                </div>
+
+                <button class="checkout-btn" id="checkout-btn">
+                    Procesar Pago
+                </button>
+            </div>
+        </aside>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/products.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

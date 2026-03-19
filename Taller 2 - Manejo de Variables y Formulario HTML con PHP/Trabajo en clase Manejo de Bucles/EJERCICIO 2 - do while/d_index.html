@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Menú</title>
+</head>
+<body>
+    <form action="d.php" method="post">
+        <h2>Menú de Opciones</h2>
+        <p>1. Saludo</p>
+        <p>2. Salir</p>
+        <label for="opcion">Elige una opción:</label>
+        <input type="number" name="opcion" id="opcion" required min="1" max="2">
+        <input type="submit" value="Aceptar">
+    </form>
+    
+    <?php
+    // Para mostrar el mensaje de saludo si viene de d.php
+    if (isset($_GET['msg'])) {
+        echo "<p>" . htmlspecialchars($_GET['msg']) . "</p>";
+    }
+    ?>
+</body>
+</html>
